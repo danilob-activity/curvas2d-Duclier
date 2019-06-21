@@ -30,12 +30,24 @@
         <div class="playable-buttons">
             <input id="save" type="button" value="Save" />
         </div>
+        Control Curve(s) Lenght<br>
+     <input type="range" min="0" max="1" value="0" step="0.01" id="u" oninput="updateValue();"> u = <output id="output">0</output><br>
+     <input type="checkbox" class="control_pol" value="ctrl_pol"> Show Control Polygon (Bezier)<br>
+     <input type="checkbox" class="control_inter" value="ctrl_inter"> Show Interpolation (Bezier)<br>
+     <input type="checkbox" class="control_arrow" value="ctrl_arrow"> Show Arrows (Hermite)<br>
+     <input type="checkbox" class="control_points" value="ctrl_points"> Show Points(All) 
         <textarea id="code" class="playable-code">
 p0 = [-250,-100]; 
 p1 = [250,140]; 
-p2 = [-1200,+150]; 
-p3 = [-300,-525]; 
-setHermite(p0,p1,p2,p3);
+p2 = [-120,+150]; 
+p3 = [-300,-55]; 
+setBezier(p0,p1,p2,p3);
+
+po = [-20,-100]; 
+pi = [400,140]; 
+pz = [-120,+150]; 
+px = [-450,-55]; 
+setHermite(po,pi,pz,px);
   </textarea>
 
         <script src="gl-matrix.js"></script>
