@@ -79,6 +79,58 @@ Polynomial.prototype.showPolynomial = function() {
     console.log("degree: "+this.degree+" | coeff:["+this.coeff+"]");
 }
 
+function CurveHermite(){
+    this.p_a = new Vec2();
+    this.p_b = new Vec2();
+    this.p_c = new Vec2();
+    this.p_d = new Vec2();
+    this.p_size=0;
+    this.l_size=0;
+}
+
+function CurveHermite(p_a,p_b,p_c,p_d){
+    this.p_a = p_a;
+    this.p_b = p_b;
+    this.p_c = p_c;
+    this.p_d = p_d;
+    this.p_size=0;
+    this.l_size=0;
+}
+
+CurveHermite.prototype.a = function(){
+    a = new Vec2();
+    a.x = -1*this.p_a.x+3*this.p_b.x-3*this.p_c.x+1*this.p_d.x;
+    a.y = -1*this.p_a.y+3*this.p_b.y-3*this.p_c.y+1*this.p_d.y;
+    return a;
+}
+
+CurveHermite.prototype.b = function(){
+    b = new Vec2();
+    b.x = 3*this.p_a.x-6*this.p_b.x+3*this.p_c.x+0*this.p_d.x;
+    b.y = 3*this.p_a.y-6*this.p_b.y+3*this.p_c.y+0*this.p_d.y;
+    return b;
+}
+
+CurveHermite.prototype.c = function(){
+    c = new Vec2();
+    c.x = -3*this.p_a.x+3*this.p_b.x-0*this.p_c.x+0*this.p_d.x;
+    c.y = -3*this.p_a.y+3*this.p_b.y-0*this.p_c.y+0*this.p_d.y;
+    return c;
+}
+
+CurveHermite.prototype.evaluate = function(t) //parametro 0<=t<=1
+{
+    var b0,b1,b2,b3;
+    b0 = 2 * t * t * t - 3 * t * t + 1;
+    b1 = -2 * t * t * t + 3 * t * t;
+    b2 = t * t * t - 2 * t * t + t;
+    b3 = t * t * t - t * t;
+    p = new Vec2();
+    p.x = this.p_a.x*b0 + this.p_b.x*b1 + this.p_c.x*b2 + this.p_d.x*b3;
+    p.y = this.p_a.y*b0 + this.p_b.y*b1 + this.p_c.y*b2 + this.p_d.y*b3;
+    return p;
+}
+
 function CurveBezier(){
     this.p_a = new Vec2();
     this.p_b = new Vec2();
@@ -136,7 +188,7 @@ function ArcLength(){
     this.u2=0;
     this.length=0;
     this.table=[]; //lista de Table_Entry
-    this.curve= new CurveBezier();
+    this.curve;
     this.is_calculate = false;
 }
 
@@ -285,13 +337,31 @@ ArcLength.prototype.getU = function(indice,s)
 
 }
 
-function exampleOfUse(){
+function exampleOfUseBezier(){
     console.log("Example of use ArcLength");
     var p0 = new Vec2(0,0);
     var p1 = new Vec2(10,0);
     var p2 = new Vec2(10,10);
     var p3 = new Vec2(0,0);
     var curve = new CurveBezier(p0,p1,p2,p3);
+    var arc = new ArcLength();
+    arc.adaptive_integration(curve,0.0,1.0,0.0000001); //calculates the total arc length and save the table
+    console.log("ArcLength:"+arc.length);
+    var x = arc.length/2.0;
+    var u = arc.getValueU(x); //returns the value of u given a length x;
+    console.log("Parameter u="+u+", gives arc length = "+x);
+    pu = arc.getVec4S(curve,x); //returns the point 2D given a length x;
+    console.log("Parameter u="+u+", point: ("+pu.x+", "+pu.y+")");
+    console.log("Example of use ArcLength End ***");
+}
+
+function exampleOfUseHermite(){
+    console.log("Example of use ArcLength");
+    var p0 = new Vec2(0,0);
+    var p1 = new Vec2(10,0);
+    var p2 = new Vec2(10,10);
+    var p3 = new Vec2(0,0);
+    var curve = new CurveHermite(p0,p1,p2,p3);
     var arc = new ArcLength();
     arc.adaptive_integration(curve,0.0,1.0,0.0000001); //calculates the total arc length and save the table
     console.log("ArcLength:"+arc.length);
