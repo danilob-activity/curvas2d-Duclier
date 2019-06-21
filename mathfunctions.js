@@ -105,3 +105,52 @@ function module3D(v) { //calcula modulo do vetor (a,b)
 function module(a, b) { //calcula modulo do vetor (a,b)
     return Math.sqrt(a * a + b * b);
 }
+
+//Vetor * Constante, 2D
+function multVecK(A,k){
+    aux = [0,0];
+
+    for (var i = 0; i < A.length; i++) {
+        aux[i] = A[i] * k;
+    };
+
+    return aux;
+}
+
+//Vetor + Vetor, 2D
+function sumOfVec(A,B){
+    aux = [0,0];
+
+    for (var i = 0; i < A.length; i++) {
+        aux[i] = A[i] + B[i];
+    };
+
+    return aux;
+}
+
+// createArcs para bezier e hermite , respectivamente
+// foi adicionado um parametro t para ser calculado conforme o valor passado no slidebar da página
+function createArc(p0l, p1l, p2l, p3l,t) {
+    //console.log("Example of use ArcLength");
+    var p0 = new Vec2(p0l[0], p0l[1]);
+    var p1 = new Vec2(p1l[0], p1l[1]);
+    var p2 = new Vec2(p2l[0], p2l[1]);
+    var p3 = new Vec2(p3l[0], p3l[1]);
+    var curve = new CurveBezier(p0, p1, p2, p3);
+    var arc = new ArcLength();
+    arc.adaptive_integration(curve, 0.0, t, 0.0000001); //calculates the total arc length and save the table
+    return [arc, curve]; 
+}
+
+function createArcHermite(p0l, p1l, p2l, p3l,t) {
+    //console.log("Example of use ArcLength");
+    var p0 = new Vec2(p0l[0], p0l[1]);
+    var p1 = new Vec2(p1l[0], p1l[1]);
+    var p2 = new Vec2(p2l[0], p2l[1]);
+    var p3 = new Vec2(p3l[0], p3l[1]);
+    var curve = new CurveHermite(p0, p1, p2, p3);
+    var arc = new ArcLength();
+    arc.adaptive_integration(curve, 0.0, t, 0.0000001); //calculates the total arc length and save the table
+    return [arc, curve]; 
+}
+
