@@ -4,6 +4,7 @@ var textarea = document.getElementById("code");
 var reset = document.getElementById("reset");
 var edit = document.getElementById("edit");
 var code = textarea.value;
+var acel = 1;
 
 var scale = 1;
 
@@ -12,6 +13,7 @@ var points_curveB = [];
 var np = 100;
 var fps = 60;
 var frame_current = 0;
+var frame_current_h = 0;
 var total_time = 3;
 
 
@@ -27,18 +29,21 @@ function drawCanvas() {
 
     setTimeout(function() {
         requestAnimationFrame(drawCanvas);
-        frame_current += 1;
+        frame_current += acel*0.8;
+        frame_current_h+= acel*0.8;
+        frame_current_h = frame_current_h %(total_time*fps);
         frame_current = frame_current % (total_time * fps);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         eval(textarea.value);
 
-        if(frame_current<=((total_time * fps) / 3)){  
-
-        } else if(frame_current>=(((total_time * fps) * 5) / 3)){
-
+        if(frame_current<=((total_time * fps) *0.5)){  
+            frame_current = frame_current + acel*0.2 ;
+        } else if(frame_current>=(((total_time * fps) * 5) / 2)){
+            frame_current = frame_current + acel-1 ;
         }else{
-            frame_current = frame_current + 1 ;
+            frame_current = frame_current + acel*1.5 ;
+            //console.log(acel)
         }
         // call the draw function again!
         //requestAnimationFrame(draw);
@@ -136,7 +141,7 @@ function setHermite(p0, p1, p0l, p1l) {
     }
     var arc = createArcHermite(p0, p1, p0l, p1l,val);
     var total_length = arc[0].length;
-    var length_current = total_length * (frame_current / (total_time * (fps)));
+    var length_current = total_length * ((frame_current_h) / ((total_time) * (fps)));
     p_current = arc[0].getVec4S(arc[1], length_current)
 
     //p_current = calculatePointCurveBezier(p0, p1, p2, p3, frame_current / (total_time * fps));
@@ -167,7 +172,7 @@ function setBezier(p0, p1, p0l, p1l) {
     ctx.fillStyle = "#ff836444";
     ctx.strokeStyle = "#8b104e";
     ctx.fillStyle = "#494949";
-    console.log(test_ctrl_points)
+    //console.log(test_ctrl_points)
     if(test_ctrl_points){
         ctx.fillText("p0", pos0[0] + 7, pos0[1] - 7);
         ctx.fillText("p3", pos1l[0] + 7, pos1l[1] - 7);
@@ -292,22 +297,13 @@ function drawCurveHermite() {
 function updateValue() {
    var val = document.getElementById("u").value //gets the oninput value
    document.getElementById('output').innerHTML = val //displays this value to the html page
+   acel = document.getElementById("a").value
+   document.getElementById('a-value').innerHTML = acel //displays this value to the html page
+   acel = parseFloat(acel)
    //drawCanvas();
   
 }
-function calculatePointsCurveHermite(p0, p1, p0l, p1l) {
-    q = [
-        [p0[0], p0[1]],
-        [p1[0], p1[1]],
-        [p0l[0], p0l[1]],
-        [p1l[0], p1l[1]]
-    ];
-    for (var i = 0; i <= np; i++) {
-        u = (1. * (i)) / np;
-        p = mult(getMatrixBuhermite(u), q);
-        points_curveH.push([p[0], p[1]]);
-    }
-}
+
 // Calcula os pontos da curva de Bézier até o parametro u0 que é passado pela slidebar
 function calculatePointsCurveBezierSlide(u0,p0, p1, p0l, p1l){
     q = [
@@ -335,19 +331,6 @@ function calculatePointsCurveHermiteSlide(u0,p0, p1, p0l, p1l){
     for (var i = 0; i <= u0+0.01; i+=0.01) {
         p = mult(getMatrixBuhermite(i), q);
         points_curveH.push([p[0], p[1]]);
-    }
-}
-function calculatePointsCurveBezier(p0, p1, p0l, p1l) {
-    q = [
-        [p0[0], p0[1]],
-        [p1[0], p1[1]],
-        [p0l[0], p0l[1]],
-        [p1l[0], p1l[1]]
-    ];
-    for (var i = 0; i <= np; i++) {
-        u = (1. * (i)) / np;
-        p = mult(getMatrixBubezier(u), q);
-        points_curveB.push([p[0], p[1]]);
     }
 }
 
